@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosys Onboarding Portal</title>
+    <style>
+        /* Modern CSS Reset & Typography */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); padding: 20px; }
+        .onboarding-container { background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); width: 100%; max-width: 500px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h2 { color: #007CC3; font-size: 26px; margin-bottom: 8px; }
+        .header p { color: #666; font-size: 14px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #333333; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px; background-color: #f8f9fa; transition: all 0.3s ease; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #007CC3; background-color: #ffffff; outline: none; box-shadow: 0 0 0 3px rgba(0, 124, 195, 0.15); }
+        .submit-btn-container { text-align: center; margin-top: 25px; }
+        .submit-btn { width: 100%; padding: 14px; background-color: #007CC3; color: #ffffff; border: none; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background-color 0.3s ease, transform 0.1s ease; }
+        .submit-btn:hover { background-color: #005a8e; }
+        .submit-btn:active { transform: scale(0.98); }
+        
+        /* Success Message Styling (Hidden by default) */
+        .success-message { display: none; text-align: center; padding: 20px 0; }
+        .success-icon { font-size: 48px; color: #28a745; margin-bottom: 15px; }
+        .success-message h3 { color: #333; font-size: 22px; margin-bottom: 10px; }
+        .success-message p { color: #666; font-size: 16px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <div class="onboarding-container">
+        
+        <div id="form-wrapper">
+            <div class="header">
+                <h2>Infosys Onboarding</h2>
+                <p>Please enter your details to proceed</p>
+            </div>
+
+            <form id="infosys-onboarding-form">
+                <div class="form-group">
+                    <label for="candidateId">Candidate ID</label>
+                    <input type="text" id="candidateId" placeholder="e.g. INF12345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name as per Govt ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" placeholder="10-digit mobile number" required>
+                </div>
+                <div class="form-group">
+                    <label for="panNumber">PAN Card Number</label>
+                    <input type="text" id="panNumber" placeholder="e.g. ABCDE1234F" required>
+                </div>
+                <div class="form-group">
+                    <label for="aadhaarNumber">Aadhaar Card Number</label>
+                    <input type="text" id="aadhaarNumber" placeholder="12-digit Aadhaar number" required>
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" placeholder="dd-mm-yyyy" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Permanent Address</label>
+                    <textarea id="address" placeholder="Enter your complete address..." required></textarea>
+                </div>
+                
+                <div class="submit-btn-container">
+                    <button type="submit" class="submit-btn" id="submitBtn">Submit Details</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="success-message" class="success-message">
+            <div class="success-icon">✓</div>
+            <h3>Welcome to Infosys, <span id="display-name"></span>!</h3>
+            <p>Your onboarding details have been successfully submitted and saved to our secure records.</p>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('infosys-onboarding-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Stop page reload
+            
+            // 1. Change button state to show processing
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = "Processing...";
+            submitBtn.disabled = true;
+
+            // 2. Gather Data
+            const payload = {
+                candidateId: document.getElementById('candidateId').value,
+                fullName: document.getElementById('fullName').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                panNumber: document.getElementById('panNumber').value,
+                aadhaarNumber: document.getElementById('aadhaarNumber').value,
+                dob: document.getElementById('dob').value,
+                address: document.getElementById('address').value
+            };
+
+            try {
+                // 3. Send to Python Backend
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    // 4. Update UI on Success
+                    document.getElementById('form-wrapper').style.display = 'none';
+                    document.getElementById('display-name').textContent = result.name;
+                    document.getElementById('success-message').style.display = 'block';
+                } else {
+                    alert('Submission failed. Please try again.');
+                    submitBtn.textContent = "Submit Details";
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error during submission:', error);
+                alert('A network error occurred. Please ensure the backend is running.');
+                submitBtn.textContent = "Submit Details";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>

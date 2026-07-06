@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosys Onboarding Portal - V2</title>
+    <style>
+        /* Modern V2 CSS: Two-column grid layout with updated colors */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); padding: 20px; }
+        
+        /* Changed wrapper class for RPA testing */
+        .portal-wrapper-v2 { background-color: #ffffff; padding: 40px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); width: 100%; max-width: 650px; border-top: 5px solid #007CC3; }
+        
+        .onboarding-header { text-align: center; margin-bottom: 30px; }
+        .onboarding-header h2 { color: #1a1a1a; font-size: 28px; margin-bottom: 5px; }
+        .onboarding-header p { color: #777; font-size: 15px; }
+        
+        /* New V2 feature: CSS Grid for form fields */
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: span 2; }
+        
+        .input-block { display: flex; flex-direction: column; }
+        .input-block label { margin-bottom: 8px; color: #444; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-block input, .input-block textarea { width: 100%; padding: 14px; border: 2px solid #e1e5eb; border-radius: 8px; font-size: 14px; background-color: #fcfcfc; transition: all 0.3s ease; }
+        .input-block textarea { resize: vertical; min-height: 80px; }
+        .input-block input:focus, .input-block textarea:focus { border-color: #007CC3; background-color: #ffffff; outline: none; }
+        
+        .action-row { text-align: center; margin-top: 30px; }
+        .btn-submit-v2 { width: 100%; max-width: 300px; padding: 16px; background-color: #007CC3; color: #ffffff; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease; }
+        .btn-submit-v2:hover { background-color: #005a8e; }
+        
+        /* Success Message Styling */
+        .success-banner { display: none; text-align: center; padding: 30px 10px; }
+        .icon-check { font-size: 55px; color: #10b981; margin-bottom: 20px; }
+        .success-banner h3 { color: #1f2937; font-size: 24px; margin-bottom: 12px; }
+        .success-banner p { color: #6b7280; font-size: 16px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <div class="portal-wrapper-v2">
+        
+        <div id="ui-form-container">
+            <div class="onboarding-header">
+                <h2>Infosys Onboarding</h2>
+                <p>Version 2.0 Secure Portal</p>
+            </div>
+
+            <form id="frm_onboarding_v2">
+                <div class="grid-form">
+                    <div class="input-block">
+                        <label for="inp_cand_id">Candidate ID</label>
+                        <input type="text" id="inp_cand_id" placeholder="INF12345678" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="inp_fname">Full Name</label>
+                        <input type="text" id="inp_fname" placeholder="As per Govt ID" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="inp_mobile">Phone Number</label>
+                        <input type="tel" id="inp_mobile" placeholder="10-digit number" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="inp_dob_v2">Date of Birth</label>
+                        <input type="date" id="inp_dob_v2" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="inp_pan_card">PAN Card Number</label>
+                        <input type="text" id="inp_pan_card" placeholder="ABCDE1234F" required>
+                    </div>
+                    <div class="input-block">
+                        <label for="inp_aadhaar_card">Aadhaar Number</label>
+                        <input type="text" id="inp_aadhaar_card" placeholder="12-digit number" required>
+                    </div>
+                    <div class="input-block full-width">
+                        <label for="txt_address">Permanent Address</label>
+                        <textarea id="txt_address" placeholder="Complete residential address..." required></textarea>
+                    </div>
+                </div>
+                
+                <div class="action-row">
+                    <button type="submit" class="btn-submit-v2" id="action_submit">Confirm & Submit</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="banner_success" class="success-banner">
+            <div class="icon-check">✓</div>
+            <h3>Onboarding Successful, <span id="lbl_display_name"></span>!</h3>
+            <p>Your details have been securely transmitted and recorded in the system.</p>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('frm_onboarding_v2').addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+            
+            const submitBtn = document.getElementById('action_submit');
+            submitBtn.textContent = "Authenticating...";
+            submitBtn.disabled = true;
+
+            // CRITICAL: Notice how the JSON keys on the LEFT match the original Python backend requirements,
+            // but the DOM IDs on the RIGHT match the new V2 HTML structure.
+            const payload = {
+                candidateId: document.getElementById('inp_cand_id').value,
+                fullName: document.getElementById('inp_fname').value,
+                phoneNumber: document.getElementById('inp_mobile').value,
+                panNumber: document.getElementById('inp_pan_card').value,
+                aadhaarNumber: document.getElementById('inp_aadhaar_card').value,
+                dob: document.getElementById('inp_dob_v2').value,
+                address: document.getElementById('txt_address').value
+            };
+
+            try {
+                // The URL remains identical
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    // Update V2 UI on Success
+                    document.getElementById('ui-form-container').style.display = 'none';
+                    document.getElementById('lbl_display_name').textContent = result.name;
+                    document.getElementById('banner_success').style.display = 'block';
+                } else {
+                    alert('Submission failed. Please try again.');
+                    submitBtn.textContent = "Confirm & Submit";
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('A network error occurred. Please ensure the Python backend is running.');
+                submitBtn.textContent = "Confirm & Submit";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Locators>
+    <Element name="CandidateID" xpath="//label[text()='Candidate ID']/following-sibling::input" />
+    <Element name="FullName" xpath="//label[text()='Full Name']/following-sibling::input" />
+    <Element name="PhoneNumber" xpath="//label[text()='Phone Number']/following-sibling::input" />
+    <Element name="PANNumber" xpath="//label[text()='PAN Card Number']/following-sibling::input" />
+    <Element name="AadhaarNumber" xpath="//label[text()='Aadhaar Card Number']/following-sibling::input" />
+    <Element name="DOB" xpath="//label[text()='Date of Birth']/following-sibling::input" />
+    <Element name="Address" xpath="//label[text()='Permanent Address']/following-sibling::textarea" />
+    <Element name="SubmitButton" xpath="//button[text()='Submit Details']" />
+    <Element name="SuccessMessage" xpath="//div[@id='success-message']" />
+</Locators>
